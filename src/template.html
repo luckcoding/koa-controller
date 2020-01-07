@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>接口文档</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      color: rgb(59, 65, 81);
+      font-size: 14px;
+    }
+
+    section {
+      background: rgba(97, 175, 254, 0.1);
+      border: 1px solid rgb(97, 175, 254);
+      margin-bottom: 10px;
+    }
+    section .HD {
+      padding: 10px;
+    }
+    section .HD span {
+      padding: 0 10px;
+      background: rgb(97, 175, 254);
+      color: #ffffff;
+      margin-right: 10px;
+      text-transform: uppercase;
+    }
+    section .HD i {
+      font-size: 12px;
+      margin-left: 10px;
+    }
+    section.hidden form {
+      display: none;
+    }
+
+    form {
+      overflow: hidden;
+      padding: 0 10px 10px;
+    }
+    form .BAR {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 2px 5px;
+      background-color: #fff;
+    }
+
+    .PARAM p {
+      display: flex;
+      align-items: center;
+      margin: 10px 0 0;
+      padding: 0;
+    }
+    .PARAM label {
+      font-weight: bold;
+      min-width: 150px;
+      display: block;
+    }
+    .PARAM label span {
+      font-weight: normal;
+      font-size: 12px;
+      color: #ccc;
+      margin-left: 10px;
+    }
+    .PARAM .required::before {
+      content: '*';
+      color: red;
+    }
+    .PARAM b {
+      margin: 0 10px;
+      font-size: 12px;
+      color: rgb(97, 175, 254);
+    }
+    .PARAM b::before {
+      content: '{';
+    }
+    .PARAM b::after {
+      content: '}';
+    }
+    .PARAM i {
+      font-size: 12px;
+    }
+  </style>
+  <script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.min.js"></script>
+  <script>
+  (function(){window.pathToRegexp=pathToRegexp;window.pathToRegexp.match=match;window.pathToRegexp.regexpToFunction=regexpToFunction;window.pathToRegexp.parse=parse;window.pathToRegexp.compile=compile;window.pathToRegexp.tokensToFunction=tokensToFunction;window.pathToRegexp.tokensToRegExp=tokensToRegExp;var DEFAULT_DELIMITER="/";var PATH_REGEXP=new RegExp(["(\\\\.)","(?:\\:(\\w+)(?:\\(((?:\\\\.|[^\\\\()])+)\\))?|\\(((?:\\\\.|[^\\\\()])+)\\))([+*?])?"].join("|"),"g");function parse(str,options){var tokens=[];var key=0;var index=0;var path="";var defaultDelimiter=(options&&options.delimiter)||DEFAULT_DELIMITER;var whitelist=(options&&options.whitelist)||undefined;var pathEscaped=false;var res;while((res=PATH_REGEXP.exec(str))!==null){var m=res[0];var escaped=res[1];var offset=res.index;path+=str.slice(index,offset);index=offset+m.length;if(escaped){path+=escaped[1];pathEscaped=true;continue}var prev="";var name=res[2];var capture=res[3];var group=res[4];var modifier=res[5];if(!pathEscaped&&path.length){var k=path.length-1;var c=path[k];var matches=whitelist?whitelist.indexOf(c)>-1:true;if(matches){prev=c;path=path.slice(0,k)}}if(path){tokens.push(path);path="";pathEscaped=false}var repeat=modifier==="+"||modifier==="*";var optional=modifier==="?"||modifier==="*";var pattern=capture||group;var delimiter=prev||defaultDelimiter;tokens.push({name:name||key++,prefix:prev,delimiter:delimiter,optional:optional,repeat:repeat,pattern:pattern?escapeGroup(pattern):"[^"+escapeString(delimiter===defaultDelimiter?delimiter:(delimiter+defaultDelimiter))+"]+?"})}if(path||index<str.length){tokens.push(path+str.substr(index))}return tokens}function compile(str,options){return tokensToFunction(parse(str,options),options)}function match(str,options){var keys=[];var re=pathToRegexp(str,keys,options);return regexpToFunction(re,keys)}function regexpToFunction(re,keys){return function(pathname,options){var m=re.exec(pathname);if(!m){return false}var path=m[0];var index=m.index;var params={};var decode=(options&&options.decode)||decodeURIComponent;for(var i=1;i<m.length;i++){if(m[i]===undefined){continue}var key=keys[i-1];if(key.repeat){params[key.name]=m[i].split(key.delimiter).map(function(value){return decode(value,key)})}else{params[key.name]=decode(m[i],key)}}return{path:path,index:index,params:params}}}function tokensToFunction(tokens,options){var matches=new Array(tokens.length);for(var i=0;i<tokens.length;i++){if(typeof tokens[i]==="object"){matches[i]=new RegExp("^(?:"+tokens[i].pattern+")$",flags(options))}}return function(data,options){var path="";var encode=(options&&options.encode)||encodeURIComponent;var validate=options?options.validate!==false:true;for(var i=0;i<tokens.length;i++){var token=tokens[i];if(typeof token==="string"){path+=token;continue}var value=data?data[token.name]:undefined;var segment;if(Array.isArray(value)){if(!token.repeat){throw new TypeError('Expected "'+token.name+'" to not repeat, but got array')}if(value.length===0){if(token.optional){continue}throw new TypeError('Expected "'+token.name+'" to not be empty')}for(var j=0;j<value.length;j++){segment=encode(value[j],token);if(validate&&!matches[i].test(segment)){throw new TypeError('Expected all "'+token.name+'" to match "'+token.pattern+'"')}path+=(j===0?token.prefix:token.delimiter)+segment}continue}if(typeof value==="string"||typeof value==="number"||typeof value==="boolean"){segment=encode(String(value),token);if(validate&&!matches[i].test(segment)){throw new TypeError('Expected "'+token.name+'" to match "'+token.pattern+'", but got "'+segment+'"')}path+=token.prefix+segment;continue}if(token.optional){continue}throw new TypeError('Expected "'+token.name+'" to be '+(token.repeat?"an array":"a string"))}return path}}function escapeString(str){return str.replace(/([.+*?=^!:${}()[\]|/\\])/g,"\\$1")}function escapeGroup(group){return group.replace(/([=!:$/()])/g,"\\$1")}function flags(options){return options&&options.sensitive?"":"i"}function regexpToRegexp(path,keys){if(!keys){return path}var groups=path.source.match(/\((?!\?)/g);if(groups){for(var i=0;i<groups.length;i++){keys.push({name:i,prefix:null,delimiter:null,optional:false,repeat:false,pattern:null})}}return path}function arrayToRegexp(path,keys,options){var parts=[];for(var i=0;i<path.length;i++){parts.push(pathToRegexp(path[i],keys,options).source)}return new RegExp("(?:"+parts.join("|")+")",flags(options))}function stringToRegexp(path,keys,options){return tokensToRegExp(parse(path,options),keys,options)}function tokensToRegExp(tokens,keys,options){options=options||{};var strict=options.strict;var start=options.start!==false;var end=options.end!==false;var delimiter=options.delimiter||DEFAULT_DELIMITER;var endsWith=[].concat(options.endsWith||[]).map(escapeString).concat("$").join("|");var route=start?"^":"";for(var i=0;i<tokens.length;i++){var token=tokens[i];if(typeof token==="string"){route+=escapeString(token)}else{var capture=token.repeat?"(?:"+token.pattern+")(?:"+escapeString(token.delimiter)+"(?:"+token.pattern+"))*":token.pattern;
+if(keys){keys.push(token)}if(token.optional){if(!token.prefix){route+="("+capture+")?"}else{route+="(?:"+escapeString(token.prefix)+"("+capture+"))?"}}else{route+=escapeString(token.prefix)+"("+capture+")"}}}if(end){if(!strict){route+="(?:"+escapeString(delimiter)+")?"}route+=endsWith==="$"?"$":"(?="+endsWith+")"}else{var endToken=tokens[tokens.length-1];var isEndDelimited=typeof endToken==="string"?endToken[endToken.length-1]===delimiter:endToken===undefined;if(!strict){route+="(?:"+escapeString(delimiter)+"(?="+endsWith+"))?"}if(!isEndDelimited){route+="(?="+escapeString(delimiter)+"|"+endsWith+")"}}return new RegExp(route,flags(options))}function pathToRegexp(path,keys,options){if(path instanceof RegExp){return regexpToRegexp(path,keys)}if(Array.isArray(path)){return arrayToRegexp((path),keys,options)}return stringToRegexp((path),keys,options)}})();
+  </script>
+</head>
+<body>
+  <header>
+    <h1>koa-controller</h1>
+    <h2>http://localhost:3030</h2>
+  </header>
+  <p id="description">接口文档</p>
+  <div id="body"></div>
+  <footer>Copyright © 2020-2020 Hotchcms</footer>
+</body>
+</html>
+<script>
+  var DEF_TAG = '$$def$$'
+    , types = ['headers', 'query', 'body', 'params']
+    , docs = window.INITIALDATA
+
+  var tagDocs = {
+    [DEF_TAG]: []
+  }
+
+  console.log(docs)
+
+  // 格式化
+  docs.paths.forEach(function (path) {
+    if (Array.isArray(path.tag) && path.tag.length) {
+      path.tag.forEach(function (tag) {
+        if (!Array.isArray(tagDocs[tag])) {
+          tagDocs[tag] = []
+        }
+        tagDocs[tag].push(path)
+      })
+    } else {
+      tagDocs[DEF_TAG].push(path)
+    }
+  })
+
+  // 文档信息
+  $('header h1').text(docs.title + ' -- ' + docs.version)
+  $('header h2').text(docs.host)
+  $('#description').text(docs.description)
+  $('footer').text(docs.copyright)
+
+  // 渲染路由信息
+  Object.keys(tagDocs).forEach(function (tag) {
+    var paths = tagDocs[tag]
+
+    var $block = $('<div />')
+    if (tag !== DEF_TAG) {
+      $block.append('<h2>' + tag + '</h2>')
+    }
+    paths.forEach(function (path) {
+      var $section = $('<section />', { class: 'hidden' })
+
+      var $hd = $('<div class="HD"></div>')
+
+      $hd.append('<span>' + path.method + '</span><b>' + path.route + '</b><i>' + path.summary + '</i>')
+      $hd.click(function () {
+        $section.toggleClass('hidden')
+      })
+
+      $section.append($hd)
+
+      var $form = $('<form action=""></form>')
+      $form.append('<div class="BAR">参数<button type="submit">发送</button></div>')
+
+      $form.submit(function (e) {
+        debugger
+        var data = {}
+        $form.serializeArray().forEach(function (item) {
+          data[item.name] = item.value
+        })
+
+        var url = (docs.host + path.route + '').replace(/\/\//, '/')
+        var domain = ''
+        var urlMatch = url.match(/[a-zA-z]+:\/\/[^/]*/)
+        if (urlMatch) {
+          ;[domain] = urlMatch
+          url = url.slice(domain.length)
+        }
+        var match = pathToRegexp.parse(url)
+        url = pathToRegexp.compile(url)(data)
+        for (const item of match) {
+          if (item instanceof Object && item.name in cloneData) {
+            delete data[item.name]
+          }
+        }
+        url = domain + url
+
+        $.ajax({
+          type: path.method.toUpperCase(),
+          url: url,
+          data: data,
+          success: function (data) {
+            console.log(data)
+          },
+          error: function (xhr, errorType, error) {
+            console.log(xhr, errorType, error)
+          }
+        })
+
+        return false
+      })
+
+      var $param = $('<div class="PARAM"></div>')
+      types.forEach(function (type) {
+        var schema = path[type]
+        if (schema) {
+          Object.keys(schema.properties).forEach(function (name) {
+            var opt = schema.properties[name]
+
+            var $param_item = $('<p />')
+            var isRequired = schema.required && schema.required.indexOf(name) !== -1
+
+            // 类型描述，处理枚举、正则、普通类型等等
+            var enumText = opt.enum ? ('&lt;' + opt.enum.join(' | ') + '&gt;') : ''
+
+            var $label = $('<label />', { class: isRequired ? 'required' : ''}).append(name + '<span>' + type + '</span>')
+            var $input = $('<input type="text" />', { name, required: isRequired })
+            var $b = $('<b>' + opt.type + enumText +  '</b>')
+            var $i = $('<i>' + (opt.description || '') + '</i>')
+
+            $param_item.append($label)
+            $param_item.append($input)
+            $param_item.append($b)
+            $param_item.append($i)
+
+            $param.append($param_item)
+          })
+        }
+      })
+
+      $form.append($param)
+      $section.append($form)
+      $block.append($section)
+    })
+    $('#body').append($block)
+  })
+
+
+  function onSubmit (form) {
+    console.log(form)
+
+    return false
+  }
+</script>

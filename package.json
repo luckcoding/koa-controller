@@ -1,0 +1,33 @@
+{
+  "name": "koa-controller",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "npm run clean && tsc -p tsconfig.json",
+    "clean": "rimraf ./dist"
+  },
+  "author": "luckcoding",
+  "license": "ISC",
+  "keywords": [
+    "koa",
+    "Joi",
+    "koa-router",
+    "controller"
+  ],
+  "devDependencies": {
+    "@types/hapi__joi": "^16.0.6",
+    "@types/koa": "^2.11.0",
+    "@types/koa-router": "^7.0.42",
+    "koa": "^2.11.0",
+    "rimraf": "^3.0.0",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.4"
+  },
+  "dependencies": {
+    "@hapi/joi": "^16.1.8",
+    "@yeongjet/joi-to-json-schema": "^1.0.2",
+    "koa-router": "^7.4.0"
+  }
+}

@@ -1,0 +1,17 @@
+*.log
+.DS_Store
+.idea
+Thumbs.db
+npm-debug.log*
+!.gitkeep
+node_modules
+logs/*
+!logs/*.gitkeep
+tmp/*
+!tmp/*.gitkeep
+install.lock
+dump.rdb
+./../.DS_Store
+apidocs/*
+!apidocs/*template
+dist
