@@ -1,1 +1,1 @@
-# koa-controller
+# @koa-lite/controller

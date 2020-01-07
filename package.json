@@ -1,15 +1,20 @@
 {
-  "name": "koa-controller",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@koa-lite/controller",
+  "version": "0.1.2",
+  "description": "integrated koa-router and joi, support api docs generated",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
-    "build": "npm run clean && tsc -p tsconfig.json",
-    "clean": "rimraf ./dist"
+    "build": "npm run clean && tsc -p tsconfig.json && npm run copy",
+    "copy": "cp src/template.html dist/",
+    "clean": "rimraf ./dist",
+    "release": "npm run build && npm publish --access public"
   },
   "author": "luckcoding",
-  "license": "ISC",
+  "license": "MIT",
   "keywords": [
     "koa",
     "Joi",
@@ -29,5 +34,12 @@
     "@hapi/joi": "^16.1.8",
     "@yeongjet/joi-to-json-schema": "^1.0.2",
     "koa-router": "^7.4.0"
+  },
+  "engines": {
+    "node": ">=7.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/luckcoding/koa-controller"
   }
 }
