@@ -1,5 +1,6 @@
-import { convert as NTConvert } from '@yeongjet/joi-to-json-schema'
+import { convert as parse } from '@yeongjet/joi-to-json-schema'
 import { isSchema } from '@hapi/joi'
+import { ICheck } from './interface'
 
 /**
  * 合并数组，且去重
@@ -34,11 +35,16 @@ export const toUrl = (path: string) => {
  * 校验转换
  * @param validates object
  */
-export const convert = (validates: any = {}) => {
-  ['query', 'body', 'params', 'headers'].forEach(type => {
+type IReqSchema = {
+  type: string
+  schema: {}
+}[]
+export const convert = (validates: ICheck = {}): IReqSchema => {
+  let output = []
+  Object.keys(validates).forEach(type => {
     if (isSchema(validates[type])) {
-      validates[type] = NTConvert(validates[type])
+      output.push({ type, schema: parse(validates[type]) })
     }
   })
-  return validates
+  return output
 }

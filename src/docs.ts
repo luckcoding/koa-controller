@@ -1,12 +1,12 @@
 export interface IPath {
-  tag: string
+  tag: string[]
   route: string
   method: string
   summary?: string
-  query?: any[]
-  body?: any[]
-  params?: any[]
-  headers?: any[]
+  request?: {
+    type: string
+    schema: {}
+  }[]
   response?: any
 }
 
@@ -17,10 +17,11 @@ export interface IDocs {
   host?: string
   paths?: IPath[]
   copyright?: string
+  basePath?: string
 }
 
 export const DEFAULT_API: IPath = {
-  tag: '$$default',
+  tag: [],
   route: '',
   method: 'get',
 }
@@ -31,5 +32,6 @@ export const DEFAULT_DOCS: IDocs = {
   description: 'router and parameters handle (by hotchcms)',
   host: 'http://127.0.0.1:3030',
   copyright: 'Copyright © 2020-2020 Hotchcms',
+  basePath: '/docs',
 }
 

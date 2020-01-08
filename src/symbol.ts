@@ -19,7 +19,3 @@ export const SUMMARY = Symbol('SUMMARY')
 
 // response
 export const RESPONSE = Symbol('RESPONSE')
-
-// description
-export const CLASS_DESC = Symbol('CLASS_DESC')
-export const METHOD_DESC = Symbol('METHOD_DESC')

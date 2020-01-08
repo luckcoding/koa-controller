@@ -7,8 +7,8 @@ import { IRequest, ISummaryMap, ITagMap, ITag, ICheckMap, IPrefix, IRequestMap, 
 import { IDocs, DEFAULT_DOCS, IPath } from './docs'
 
 export interface opts extends IRouterOptions {
-  docs?: IDocs;
-  controllers?: Function[];
+  docs?: IDocs
+  controllers?: Function[]
 }
 
 export class Controller {
@@ -19,7 +19,8 @@ export class Controller {
     this.router = new Router(opts);
     this.prefix = opts.prefix || '/'
     this.docs = { ...DEFAULT_DOCS, ...opts.docs }
-    this.router.get('/docs', async (ctx: BaseContext) => {
+    // render docs
+    this.router.get(this.docs.basePath, async (ctx: BaseContext) => {
       ctx.type = 'text/html;charset=utf-8'
       ctx.body = await template(this.docs)
     })
@@ -60,11 +61,11 @@ export class Controller {
       // get check data
       const check: ICheck = checkMap.get(name)
       paths.push({
-        tag,
+        tag: tag.length ? tag : ['__DEF_TAG__'], // 给个默认TAG
         route,
         method,
         summary,
-        ...convert(check)
+        request: convert(check),
       } as IPath)
     })
 

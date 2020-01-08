@@ -39,7 +39,3 @@ export interface IResponse {
   }
 }
 export type IResponseMap = Map<string, IResponse>
-
-// description
-export type IDesc = string
-export type IDescMap = Map<string, IDesc>
