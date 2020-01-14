@@ -102,9 +102,9 @@
       <h2>{{ docs.host }}</h2>
       <p>{{ docs.description }}</p>
     </header>
-    <article v-for="tag in tags">
+    <article v-for="(tag, tagIdx) in tags">
       <h2 v-if="tag.name !== '__DEF_TAG__'">{{ tag.name }}</h2>
-      <section v-for="path in tag.paths" :class="path.method">
+      <section v-for="(path, pathIdx) in tag.paths" :class="path.method">
         <div class="path">
           <Toggle>
             <template v-slot:header>
@@ -116,7 +116,7 @@
             </template>
             <template v-slot:content>
               <span v-show="false">
-                {{ formId = parseInt(Math.random() * 10000) }}
+                {{ formId = tagIdx + '-' + pathIdx }}
               </span>
               <form action="" v-on:submit.prevent="onSubmit($event, path, formId)">
                 <div class="hd">

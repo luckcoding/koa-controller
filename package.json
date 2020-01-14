@@ -1,6 +1,6 @@
 {
   "name": "@koa-lite/controller",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "integrated koa-router and joi, support api docs generated",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,6 +14,11 @@
     "release": "npm run build && npm publish --access public"
   },
   "author": "luckcoding",
+  "homepage": "https://github.com/luckcoding/koa-controller",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/luckcoding/koa-controller"
+  },
   "license": "MIT",
   "keywords": [
     "koa",
@@ -37,9 +42,5 @@
   },
   "engines": {
     "node": ">=7.6.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/luckcoding/koa-controller"
   }
 }

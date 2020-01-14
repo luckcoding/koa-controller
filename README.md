@@ -1,5 +1,7 @@
 # @koa-lite/controller
 
+[![npm package](https://img.shields.io/npm/v/@koa-lite/controller/latest.svg)](https://www.npmjs.com/package/@koa-lite/controller)
+
 ## install
 
 `$ yarn add @koa-lite/controller`
@@ -42,14 +44,14 @@ app.use(router.routes())
 ## api
 
 * `Prefix()`
-* `request.get()`
-* `request.post()`
-* `request.put()`
-* `request.delete()`
-* `check.body`
-* `check.query`
-* `check.params`
-* `check.headers`
+* `Get()`
+* `Post()`
+* `Put()`
+* `Delete()`
+* `Body`
+* `Query`
+* `Params`
+* `Headers`
 * `Middle([])`
 * `Summary()`
 * `Tag()`
