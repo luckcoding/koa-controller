@@ -8,7 +8,6 @@ import { IDocs, DEFAULT_DOCS, IPath } from './docs'
 
 export interface opts extends IRouterOptions {
   docs?: IDocs
-  controllers?: Function[]
 }
 
 export class Controller {

@@ -1,5 +1,5 @@
 import { convert as parse } from '@yeongjet/joi-to-json-schema'
-import { isSchema } from '@hapi/joi'
+import { isSchema, ValidationError } from '@hapi/joi'
 import { ICheck } from './interface'
 
 /**
@@ -47,4 +47,14 @@ export const convert = (validates: ICheck = {}): IReqSchema => {
     }
   })
   return output
+}
+
+export class CheckError extends Error {
+  public error: ValidationError
+  constructor(error: ValidationError) {
+    super()
+    this.name = this.constructor.name
+    this.error = error
+    Error.captureStackTrace(this, CheckError)
+  }
 }

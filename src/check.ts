@@ -3,7 +3,7 @@ import { Middleware, Context } from 'koa'
 import { isSchema, Schema } from '@hapi/joi'
 import { CHECK } from './symbol'
 import { IType, ICheck, ICheckMap } from './interface'
-import { toArray } from './utils'
+import { toArray, CheckError } from './utils'
 
 declare module 'koa' {
   export interface BaseContext {
@@ -42,8 +42,11 @@ function _validate(schema: Schema, type: IType) {
   assert(isSchema(schema), 'Not Joi Schema')
   return async function(ctx: Context, next: Function) {
     const input = type === 'params' ? ctx.params : ctx.request[type]
-    const values = await schema.validateAsync(input)
-    ctx.$payload = { ...ctx.$payload, [type]: values }
+    const { error, value } = schema.validate(input)
+    if (error) {
+      throw new CheckError(error)
+    }
+    ctx.$payload = { ...ctx.$payload, [type]: value }
     ctx.payload = () => {
       return Object.assign.apply(null, Object.keys(ctx.$payload).map(key => ctx.$payload[key]))
     }

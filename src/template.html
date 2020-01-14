@@ -8,37 +8,57 @@
   <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
   <style>
-    body { color: #3b4151; font-size: 14px; }
-    section {
-      background: rgba(97, 175, 254, 0.1);
-      border: 1px solid #61b0fe;
+    :root {
+      --text: #3b4151;
+      --required: #ff4940;
+    }
+    *, *::after, *::before { box-sizing: border-box; }
+    body { color: var(--text); font-size: 14px; }
+    section.get {
+      --base-color: #73AFF8;
+      --shadow-color: #EDF3FA;
+    }
+    section.post {
+      --base-color: #70C995;
+      --shadow-color: #ECF5F0;
+    }
+    section.put {
+      --base-color: #F0A44B;
+      --shadow-color: #F9F2E9;
+    }
+    section.delete {
+      --base-color: #E64F48;
+      --shadow-color: #F8E9E8;
+    }
+    .path {
+      background: var(--shadow-color);
+      border: 1px solid var(--base-color);
       margin-bottom: 10px;
     }
-    section .bar {
+    .path .bar {
       padding: 10px;
       cursor: pointer;
     }
-    section .bar span {
+    .path .bar span {
       padding: 0 10px;
-      background: rgb(97, 175, 254);
+      background: var(--base-color);
       color: #ffffff;
       margin-right: 10px;
       text-transform: uppercase;
     }
-    section .bar i {
+    .path .bar i {
       font-size: 12px;
       margin-left: 10px;
     }
     form {
       overflow: hidden;
       padding: 0 10px 10px;
+      font-size: 12px;
     }
     form .hd {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 12px;
-      font-weight: bold;
       padding: 2px 5px;
       background-color: #fff;
     }
@@ -49,33 +69,29 @@
       padding: 0;
     }
     .param label {
-      font-weight: bold;
       min-width: 150px;
       display: block;
+      color: #cccccc;
     }
-    .param label span {
-      font-weight: normal;
-      font-size: 12px;
-      color: #ccc;
-      margin-left: 10px;
+    .param label b {
+      color: #333333;
+      margin-right: 10px;
     }
-    .param.required::before {
+    .param.required label::before {
       content: '*';
-      color: red;
+      color: var(--required);
     }
-    .param b {
+    .param .type {
       margin: 0 10px;
-      font-size: 12px;
-      color: rgb(97, 175, 254);
     }
-    .param b::before {
-      content: '{';
-    }
-    .param b::after {
-      content: '}';
-    }
-    .param i {
-      font-size: 12px;
+    form textarea {
+      padding: 10px;
+      background: #fff;
+      margin-top: 10px;
+      border-radius: 4px;
+      width: 100%;
+      min-height: 100px;
+      border: 1px solid #cccccc;
     }
   </style>
 </head>
@@ -88,45 +104,59 @@
     </header>
     <article v-for="tag in tags">
       <h2 v-if="tag.name !== '__DEF_TAG__'">{{ tag.name }}</h2>
-      <section v-for="path in tag.paths">
-        <Toggle>
-          <template v-slot:header>
-            <div class="bar">
-              <span>{{ path.method }}</span>
-              <b>{{ path.route }}</b>
-              <i>{{ path.summary }}</i>
-            </div>
-          </template>
-          <template v-slot:content>
-            <form action="" v-on:submit.prevent="onSubmit">
-              <div class="hd">
-                <span>参数</span>
-                <button type="submit">发送</button>
+      <section v-for="path in tag.paths" :class="path.method">
+        <div class="path">
+          <Toggle>
+            <template v-slot:header>
+              <div class="bar">
+                <span>{{ path.method }}</span>
+                <b>{{ path.route }}</b>
+                <i>{{ path.summary }}</i>
               </div>
-              <div v-for="req in path.request">
-                <p
-                  class="param"
-                  v-for="(opts, property) in req.schema.properties"
-                  v-bind:class="{ required: hasIn(property, req.schema.required) }"
-                > <!--- for in object -->
-                  <label>{{ property }}<span>{{ req.type }}</span></label>
-                  <input type="text" />
-                  <b>
-                    {{ opts.type }}
-                    <i v-if="opts.enum">&lt;{{ opts.enum.join(',') }}&gt;</i>
-                  </b>
-                  <i>{{ opts.description }}</i>
-                </p>
-              </div>
-            </form>
-          </template>
-        </Toggle>
+            </template>
+            <template v-slot:content>
+              <span v-show="false">
+                {{ formId = parseInt(Math.random() * 10000) }}
+              </span>
+              <form action="" v-on:submit.prevent="onSubmit($event, path, formId)">
+                <div class="hd">
+                  <b>参数</b>
+                  <button type="submit">发送</button>
+                </div>
+                <div v-for="req in path.request">
+                  <div v-for="(opts, property) in req.schema.properties"><!--- for in object -->
+                    <span v-show="false">
+                      {{ required = hasIn(property, req.schema.required, opts) }}
+                    </span>
+                    <p class="param" v-bind:class="{ required: required }">
+                      <label><b>{{ property }}</b>{{ req.type }}</label>
+                      <input
+                        :name="property"
+                        type="text"
+                        :data-type="opts.type"
+                        :placeholder="getInputFormat(opts.type)"
+                        :required="required"
+                      />
+                      <b class="type">
+                        {{ opts.type }}
+                        <i v-if="opts.enum">&lt;{{ opts.enum.join(',') }}&gt;</i>
+                      </b>
+                      <i>{{ opts.description }}</i>
+                    </p>
+                  </div>
+                </div>
+                <textarea :id="formId"></textarea>
+              </form>
+            </template>
+          </Toggle>
+        </div>
       </section>
     </article>
     <footer>{{ docs.copyright }}</footer>
   </div>
 </body>
 </html>
+<script src="https://cdn.bootcss.com/axios/0.19.0-beta.1/axios.min.js"></script>
 <script>
   // 展开/关闭组件
   Vue.component('Toggle', {
@@ -147,12 +177,20 @@
         <div v-bind:style="{ display: show ? \'block\' : \'none\' }"><slot name="content"></slot></div>\
       </div>'
   });
+
+  Vue.component('Input', {
+    props: ['types'],
+    template: ''
+  })
 </script>
 <script>
 new Vue({
   el: '#app',
   data: {
+    instance: {}, // 请求对象
     docs: window.INITIALDATA, // 数据源
+    arrayDesc: 'a,b,c,...',
+    booleanDesc: 'true | false | 0 | 1',
   },
   computed: {
     tags: function () {
@@ -174,16 +212,102 @@ new Vue({
   methods: {
     hasIn: function (target, pool) {
       pool = Array.isArray(pool) ? pool : [];
-      return pool.indexOf(target) !== -1
+      return pool.indexOf(target) !== -1;
     },
 
-    onSubmit: function (e) {
-      console.log(e.target)
-    }
+    getInputFormat: function (type) {
+      if (type === 'object') {
+        return '{}'
+      } else if (type === 'array') {
+        return 'a,b,c,...'
+      } else if (type === 'boolean') {
+        return '0 | 1'
+      } else {
+        return ''
+      }
+    },
+
+    getValuesFromForm: function (elements) {
+      var values = {}
+      elements.forEach(function (element) {
+        if (element.tagName === 'INPUT') {
+          var value = String(element.value);
+          if (!value) return; // 不处理空 ''
+
+          var type = element['dataset'].type;
+          switch (type) {
+            case 'number':
+            case 'integer':
+              value = Number(value);
+              break;
+            case 'boolean':
+              value = value !== '0'
+              break;
+            case 'array':
+              value = value.split(',');
+              break;
+            case 'object':
+              value = JSON.parse(value);
+              break;
+            default:
+          }
+          values[element.name] = value
+        }
+      });
+      return values
+    },
+
+    onSubmit: function (e, path, formId) {
+      try {
+        var elements = [].slice.call(e.target.elements);
+        var data = this.getValuesFromForm(elements);
+        var cloneData = clone(data)
+
+        var options = {
+          method: path.method,
+          url: compile(path.route)(data)
+        }
+        var match = parse(path.route)
+
+        for (var item of match) {
+          if (item instanceof Object && item.name in cloneData) {
+            delete cloneData[item.name]
+          }
+        }
+
+        if (options.method === 'get') {
+          options.params = cloneData
+        } else {
+          options.data = cloneData
+        }
+        this.instance.request(options).then(function (response) {
+          var form = document.getElementById(formId)
+          form.value = JSON.stringify(response.data, null, 4)
+        });
+      } catch (e) {
+        alert(e.message)
+      }
+    },
   },
 
   created: function () {
-    console.log(this.docs)
+    this.instance = axios.create({
+      baseURL: this.docs.host,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/json'
+      },
+      paramsSerializer: function (params) {
+        return Qs.stringify(params, { arrayFormat: 'brackets' })
+      },
+      responseType: 'json',
+      responseEncoding: 'utf8',
+    });
   }
 })
 </script>
+<script src="https://cdn.bootcss.com/qs/6.9.0/qs.min.js"></script>
+<script>
+  var DEFAULT_DELIMITER="/";var PATH_REGEXP=new RegExp(["(\\\\.)","(?:\\:(\\w+)(?:\\(((?:\\\\.|[^\\\\()])+)\\))?|\\(((?:\\\\.|[^\\\\()])+)\\))([+*?])?"].join("|"),"g");function parse(q,d){var l=[];var z=0;var g=0;var n="";var p=(d&&d.delimiter)||DEFAULT_DELIMITER;var f=(d&&d.whitelist)||undefined;var u=false;var A;while((A=PATH_REGEXP.exec(q))!==null){var r=A[0];var h=A[1];var e=A.index;n+=q.slice(g,e);g=e+r.length;if(h){n+=h[1];u=true;continue}var o="";var B=A[2];var s=A[3];var i=A[4];var a=A[5];if(!u&&n.length){var t=n.length-1;var x=n[t];var b=f?f.indexOf(x)>-1:true;if(b){o=x;n=n.slice(0,t)}}if(n){l.push(n);n="";u=false}var j=a==="+"||a==="*";var w=a==="?"||a==="*";var v=s||i;var y=o||p;l.push({name:B||z++,prefix:o,delimiter:y,optional:w,repeat:j,pattern:v?escapeGroup(v):"[^"+escapeString(y===p?y:(y+p))+"]+?"})}if(n||g<q.length){l.push(n+q.substr(g))}return l}function compile(b,a){return tokensToFunction(parse(b,a),a)}function match(d,a){var c=[];var b=pathToRegexp(d,c,a);return regexpToFunction(b,c)}function regexpToFunction(a,b){return function(d,l){var e=a.exec(d);if(!e){return false}var k=e[0];var h=e.index;var f={};var c=(l&&l.decode)||decodeURIComponent;for(var g=1;g<e.length;g++){if(e[g]===undefined){continue}var j=b[g-1];if(j.repeat){f[j.name]=e[g].split(j.delimiter).map(function(i){return c(i,j)})}else{f[j.name]=c(e[g],j)}}return{path:k,index:h,params:f}}}function tokensToFunction(d,a){var c=new Array(d.length);for(var b=0;b<d.length;b++){if(typeof d[b]==="object"){c[b]=new RegExp("^(?:"+d[b].pattern+")$",flags(a))}}return function(g,p){var o="";var l=(p&&p.encode)||encodeURIComponent;var m=p?p.validate!==false:true;for(var h=0;h<d.length;h++){var e=d[h];if(typeof e==="string"){o+=e;continue}var n=g?g[e.name]:undefined;var k;if(Array.isArray(n)){if(!e.repeat){throw new TypeError('Expected "'+e.name+'" to not repeat, but got array')}if(n.length===0){if(e.optional){continue}throw new TypeError('Expected "'+e.name+'" to not be empty')}for(var f=0;f<n.length;f++){k=l(n[f],e);if(m&&!c[h].test(k)){throw new TypeError('Expected all "'+e.name+'" to match "'+e.pattern+'"')}o+=(f===0?e.prefix:e.delimiter)+k}continue}if(typeof n==="string"||typeof n==="number"||typeof n==="boolean"){k=l(String(n),e);if(m&&!c[h].test(k)){throw new TypeError('Expected "'+e.name+'" to match "'+e.pattern+'", but got "'+k+'"')}o+=e.prefix+k;continue}if(e.optional){continue}throw new TypeError('Expected "'+e.name+'" to be '+(e.repeat?"an array":"a string"))}return o}}function escapeString(a){return a.replace(/([.+*?=^!:${}()[\]|/\\])/g,"\\$1")}function escapeGroup(a){return a.replace(/([=!:$/()])/g,"\\$1")}function flags(a){return a&&a.sensitive?"":"i"}function regexpToRegexp(d,c){if(!c){return d}var a=d.source.match(/\((?!\?)/g);if(a){for(var b=0;b<a.length;b++){c.push({name:b,prefix:null,delimiter:null,optional:false,repeat:false,pattern:null})}}return d}function arrayToRegexp(e,c,a){var d=[];for(var b=0;b<e.length;b++){d.push(pathToRegexp(e[b],c,a).source)}return new RegExp("(?:"+d.join("|")+")",flags(a))}function stringToRegexp(c,b,a){return tokensToRegExp(parse(c,a),b,a)}function tokensToRegExp(h,m,o){o=o||{};var j=o.strict;var b=o.start!==false;var e=o.end!==false;var a=o.delimiter||DEFAULT_DELIMITER;var f=[].concat(o.endsWith||[]).map(escapeString).concat("$").join("|");var k=b?"^":"";for(var g=0;g<h.length;g++){var d=h[g];if(typeof d==="string"){k+=escapeString(d)}else{var l=d.repeat?"(?:"+d.pattern+")(?:"+escapeString(d.delimiter)+"(?:"+d.pattern+"))*":d.pattern;if(m){m.push(d)}if(d.optional){if(!d.prefix){k+="("+l+")?"}else{k+="(?:"+escapeString(d.prefix)+"("+l+"))?"}}else{k+=escapeString(d.prefix)+"("+l+")"}}}if(e){if(!j){k+="(?:"+escapeString(a)+")?"}k+=f==="$"?"$":"(?="+f+")"}else{var c=h[h.length-1];var n=typeof c==="string"?c[c.length-1]===a:c===undefined;if(!j){k+="(?:"+escapeString(a)+"(?="+f+"))?"}if(!n){k+="(?="+escapeString(a)+"|"+f+")"}}return new RegExp(k,flags(o))}function pathToRegexp(c,b,a){if(c instanceof RegExp){return regexpToRegexp(c,b)}if(Array.isArray(c)){return arrayToRegexp((c),b,a)}return stringToRegexp((c),b,a)};
+</script>
+<script src="https://cdn.bootcss.com/clone/2.1.2/clone.min.js"></script>
