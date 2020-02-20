@@ -1,10 +1,11 @@
 import Router, { IRouterOptions } from 'koa-router'
 import { BaseContext } from 'koa'
-import { toArray, toUrl, convert } from './utils'
+import { toUrl, convert } from './utils'
 import template from './template'
 import { REQUEST, CHECK, METHOD_TAG, CLASS_TAG, SUMMARY, PREFIX, MIDDLE } from './symbol'
 import { IRequest, ISummaryMap, ITagMap, ITag, ICheckMap, IPrefix, IRequestMap, IMiddles, ISummary, ICheck } from './interface'
 import { IDocs, DEFAULT_DOCS, IPath } from './docs'
+import { __handle } from './inject'
 
 export interface opts extends IRouterOptions {
   docs?: IDocs
@@ -30,6 +31,7 @@ export class Controller {
     const checkMap: ICheckMap = Reflect.get(ctrl, CHECK) || new Map()
     const methodTagMap: ITagMap = Reflect.get(ctrl, METHOD_TAG) || new Map()
     const summaryMap: ISummaryMap = Reflect.get(ctrl, SUMMARY) || new Map()
+
     const classTag: ITag = Reflect.get(ctrl, CLASS_TAG)
     const prefix: IPrefix = Reflect.get(ctrl, PREFIX) || '/'
     const middles: IMiddles = Reflect.get(ctrl, MIDDLE) || []
@@ -40,19 +42,22 @@ export class Controller {
 
     names.forEach((name: string) => {
       // get request config
-      const { path, method, middlewares }: IRequest = requestMap.get(name)
+      const request: IRequest = requestMap.get(name)
+      const { path, method, fn, middlewares } = request
       // merge all the middles
       const chain = middles.concat(middlewares)
+      // merge to koa-router chain
       // handle the route path (is Router instence, so without the this.prefix)
       const url = toUrl(prefix + path)
       // set router
-      this.router[method](url, ...chain)
+      const newFn = typeof __handle === 'function' ? __handle(request) : fn
+      this.router[method](url, ...chain, newFn)
 
       /**
        * set api docs
        */
       // get tag
-      const tag: ITag = toArray(methodTagMap.get(name), classTag)
+      const tag: ITag = methodTagMap.get(name) || classTag || ''
       // handle route with the this.prefix
       const route = toUrl(this.prefix + url)
       // get summary
@@ -60,7 +65,7 @@ export class Controller {
       // get check data
       const check: ICheck = checkMap.get(name)
       paths.push({
-        tag: tag.length ? tag : ['__DEF_TAG__'], // 给个默认TAG
+        tag,
         route,
         method,
         summary,

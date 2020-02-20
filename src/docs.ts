@@ -1,13 +1,21 @@
+import { IType } from './interface'
+
 export interface IPath {
-  tag: string[]
+  tag: string
   route: string
   method: string
   summary?: string
   request?: {
-    type: string
+    type: IType
     schema: {}
   }[]
   response?: any
+}
+
+export interface ISecurity {
+  value: any
+  key: string
+  type: 'headers' | 'payload'
 }
 
 export interface IDocs {
@@ -18,10 +26,12 @@ export interface IDocs {
   paths?: IPath[]
   copyright?: string
   basePath?: string
+  contentType?: string
+  securities?: ISecurity[]
 }
 
 export const DEFAULT_API: IPath = {
-  tag: [],
+  tag: '',
   route: '',
   method: 'get',
 }
@@ -33,5 +43,6 @@ export const DEFAULT_DOCS: IDocs = {
   host: 'http://127.0.0.1:3030',
   copyright: 'Copyright © 2020-2020 Hotchcms',
   basePath: '/docs',
+  securities: []
 }
 

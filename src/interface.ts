@@ -2,7 +2,7 @@ import { Schema } from '@hapi/joi'
 import { Middleware } from 'koa'
 
 // tag
-export type ITag = string[]
+export type ITag = string
 export type ITagMap = Map<string, ITag>
 
 // check
@@ -18,11 +18,13 @@ export interface IRequest {
   method: string
   path: string
   middlewares: Middleware[]
+  fn: Function
 }
 export type IRequestMap = Map<string, IRequest>
 
 // middle
 export type IMiddles = Middleware[]
+// export type IMiddlesMap = Map<string, IMiddles>
 
 // prefix
 export type IPrefix = string

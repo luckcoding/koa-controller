@@ -1,4 +1,3 @@
-import { Middleware } from 'koa'
 import { toArray } from './utils'
 import { IMethod, IRequestMap, IRequest } from './interface'
 import { REQUEST } from './symbol'
@@ -28,8 +27,9 @@ function _decorator(path: string, method: string) {
     // 1. 获取路由map
     const requestMap: IRequestMap = Reflect.get(target.constructor, REQUEST) || new Map()
     // 2. 存储
-    const middlewares: Middleware[] = toArray(Reflect.get(target, key))
-    requestMap.set(key, { method, path, middlewares } as IRequest)
+    const middlewares = toArray(Reflect.get(target, key))
+    const fn: Function = middlewares.pop()
+    requestMap.set(key, { method, path, fn, middlewares } as IRequest)
     // 3. 重设
     Reflect.set(target.constructor, REQUEST, requestMap)
   }

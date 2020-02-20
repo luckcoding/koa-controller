@@ -11,5 +11,7 @@ const getTemplate = (): Promise<string> => new Promise((resolve, reject) => {
 
 export default async (initial = {}) => {
   const html = await getTemplate()
-  return html.replace('window.INITIALDATA', JSON.stringify(initial))
+  return html.replace('window.INITIALDATA', JSON.stringify(initial, (key, value) => {
+    return typeof value === 'function' ? value.toString() : value
+  }))
 }

@@ -25,14 +25,30 @@ export default class User {
 }
 
 // router.ts
-import { Controller } from '@koa-lite/controller'
+import { Controller, InjectHandle } from '@koa-lite/controller'
 import User from './controller.ts'
+
+// 包装函数
+InjectHandle(({ fn }) => fn)
+
 const router = new Controller({
   prefix: '/v1',
   docs: {
     title: '接口文档 - 客户端',
     version: 'v1',
     description: '业务接口文档 - by Hotchcms',
+    securities: [{
+      type: 'headers',
+      key: 'Authorization', // 自动注入token等信息
+      value: function (data) {
+        var ret = (data instanceof Object) && data.ret
+        return /^Bearer\s/.test(ret) ? ret : ''
+      },
+    }, {
+      type: 'headers',
+      key: 'x-device-id',
+      value: '10001',
+    }],
   }})
   .controllers([ User ])
   .get('/', ctx => { ctx.body = 'API V1' })

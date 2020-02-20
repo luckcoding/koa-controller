@@ -10,6 +10,7 @@ export const REQUEST = Symbol('REQUEST')
 
 // middle
 export const MIDDLE = Symbol('MIDDLE')
+// export const METHOD_MIDDLE = Symbol('METHOD_MIDDLE')
 
 // prefix
 export const PREFIX = Symbol('PREFIX')
