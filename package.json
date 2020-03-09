@@ -1,6 +1,6 @@
 {
   "name": "@koa-lite/controller",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "integrated koa-router and joi, support api docs generated",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "start": "ts-node example/index.ts",
-    "build": "npm run clean && tsc -p tsconfig.json && npm run copy",
+    "build": "npm run clean && tsc -p tsconfig-build.json && npm run copy",
     "copy": "cp src/template.html dist/",
     "clean": "rimraf ./dist",
     "release": "npm run build && npm publish --access public"
