@@ -137,7 +137,7 @@
   // form path
   Vue.component('path-item', {
     props: ['path'],
-    data: function () { return { fields: {}, responseText: '' } },
+    data: function () { return { fields: {}, types: {}, responseText: '' } },
     methods: {
       isIn: function (target, pool) {
         pool = Array.isArray(pool) ? pool : [];
@@ -147,7 +147,33 @@
         this.responseText = JSON.stringify(response.data, null, 4);
       },
       onSubmit: function () {
-        this.$emit('submit', this.fields, this.path, this.receive);
+        this.$emit('submit', this.getValue(this.fields), this.path, this.receive);
+      },
+      getType: function (name, opts) {
+        this.types[name] = opts.type; // set
+        return 'text'
+      },
+      getValue: function () {
+        var values = {}
+          , fields = this.fields
+          , types = this.types;
+        Object.keys(fields).forEach(function (field) {
+          var type = types[field]
+            , orgValue = fields[field] || ''
+            , value = orgValue;
+
+          if (type === 'boolean') {
+            value = !!orgValue;
+          } else if (type === 'array') {
+            value = /^\[.+\]$/.test(orgValue) ? eval(orgValue) : orgValue.split(',');
+          } else if (type === 'object') {
+            value = JSON.parse(orgValue);
+          } else if (type === 'number') {
+            value = Number(orgValue);
+          }
+          values[field] = value
+        });
+        return values;
       }
     },
     template: '\
@@ -160,7 +186,7 @@
             </i>\
             <p class="param" v-bind:class="{ required: required }">\
               <label><b>{{ name }}</b>{{ req.type }}</label>\
-              <input v-model="fields[name]" :required="required" />\
+              <input :type="getType(name, opts)" v-model="fields[name]" :required="required" />\
               <b class="type">{{ opts.type }}<i v-if="opts.enum">&lt;{{ opts.enum.join(\',\') }}&gt;</i></b>\
               <i>{{ opts.description }}</i>\
             </p>\
@@ -261,7 +287,7 @@ new Vue({
       };
 
       this.instance = axios.create({
-        baseURL: this.docs.host,
+        baseURL: this.docs.host || location.origin,
         headers: headers,
         paramsSerializer: function (params) {
           return Qs.stringify(params, { arrayFormat: 'brackets' })
