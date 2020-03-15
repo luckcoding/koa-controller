@@ -12,7 +12,7 @@ function request (method: IMethod, path: string) {
 }
 request.get = Get
 request.put = Put
-request.delete = Delete
+request.del = Delete
 request.post = Post
 
 export { request }

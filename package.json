@@ -1,6 +1,6 @@
 {
   "name": "@koa-lite/controller",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "integrated koa-router and joi, support api docs generated",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
