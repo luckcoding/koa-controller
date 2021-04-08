@@ -1,6 +1,6 @@
 import assert from 'assert'
 import { Middleware, Context } from 'koa'
-import { isSchema, Schema } from '@hapi/joi'
+import { isSchema, Schema } from 'joi'
 import { CHECK } from './symbol'
 import { IType, ICheck, ICheckMap } from './interface'
 import { toArray, CheckError } from './utils'

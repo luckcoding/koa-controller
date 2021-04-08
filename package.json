@@ -1,6 +1,6 @@
 {
   "name": "@koa-lite/controller",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "integrated koa-router and joi, support api docs generated",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,7 +10,7 @@
   "scripts": {
     "start": "ts-node example/index.ts",
     "build": "npm run clean && tsc -p tsconfig-build.json && npm run copy",
-    "copy": "cp src/template.html dist/",
+    "copy": "cp -rf src/docs dist/",
     "clean": "rimraf ./dist",
     "release": "npm run build && npm publish --access public"
   },
@@ -29,21 +29,24 @@
   ],
   "devDependencies": {
     "@koa/cors": "^3.0.0",
-    "@types/hapi__joi": "^16.0.6",
+    "@types/jsonwebtoken": "^8.5.1",
     "@types/koa": "^2.11.0",
-    "@types/koa-router": "^7.0.42",
+    "@types/koa__router": "^8.0.4",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",
     "koa-jwt": "^3.6.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "^4.0.3",
     "rimraf": "^3.0.0",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.4"
   },
   "dependencies": {
-    "@hapi/joi": "^16.1.8",
-    "@yeongjet/joi-to-json-schema": "^1.0.2",
-    "koa-router": "^7.4.0"
+    "@koa-lite/joi-schema": "^0.0.1",
+    "@koa/router": "^10.0.0",
+    "joi": "^17.4.0"
   },
   "engines": {
     "node": ">=7.6.0"

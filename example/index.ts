@@ -1,5 +1,4 @@
 
-// import 'reflect-metadata'
 import Koa from 'koa'
 import http from 'http'
 import cors from '@koa/cors'

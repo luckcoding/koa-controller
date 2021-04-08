@@ -10,7 +10,9 @@ export const isUser = async (ctx: Koa.Context, next: () => Promise<any>) => {
   const { user } = ctx.state
 
   if (!user) {
-    ctx.body = 'TOKEN_FAIL'
+    ctx.body = {
+      error: 'TOKEN_FAIL',
+    }
   } else {
     await next()
   }

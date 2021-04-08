@@ -1,13 +1,13 @@
-import Router, { IRouterOptions } from 'koa-router'
+import Router, { RouterOptions } from '@koa/router'
 import { BaseContext } from 'koa'
 import { toUrl, convert } from './utils'
 import template from './template'
-import { REQUEST, CHECK, METHOD_TAG, CLASS_TAG, SUMMARY, PREFIX, MIDDLE } from './symbol'
-import { IRequest, ISummaryMap, ITagMap, ITag, ICheckMap, IPrefix, IRequestMap, IMiddles, ISummary, ICheck } from './interface'
+import { REQUEST, CHECK, METHOD_TAG, CLASS_TAG, SUMMARY, PREFIX, MIDDLE, RESPONSE } from './symbol'
+import { IRequest, ISummaryMap, ITagMap, ITag, ICheckMap, IPrefix, IRequestMap, IMiddles, ISummary, ICheck, IResponse, IResponseMap } from './interface'
 import { IDocs, DEFAULT_DOCS, IPath } from './docs'
 import { __handle } from './inject'
 
-export interface opts extends IRouterOptions {
+export interface opts extends RouterOptions {
   docs?: IDocs
 }
 
@@ -28,6 +28,7 @@ export class Controller {
 
   private parse (ctrl: Function) {
     const requestMap: IRequestMap = Reflect.get(ctrl, REQUEST) || new Map()
+    const responseMap: IResponseMap = Reflect.get(ctrl, RESPONSE) || new Map()
     const checkMap: ICheckMap = Reflect.get(ctrl, CHECK) || new Map()
     const methodTagMap: ITagMap = Reflect.get(ctrl, METHOD_TAG) || new Map()
     const summaryMap: ISummaryMap = Reflect.get(ctrl, SUMMARY) || new Map()
@@ -64,12 +65,15 @@ export class Controller {
       const summary: ISummary = summaryMap.get(name) || ''
       // get check data
       const check: ICheck = checkMap.get(name)
+      // get response
+      const response: IResponse = responseMap.get(name)
       paths.push({
         tag,
         route,
         method,
         summary,
         request: convert(check),
+        response,
       } as IPath)
     })
 

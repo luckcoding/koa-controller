@@ -8,8 +8,8 @@ const routerV1 = new Controller({
       type: 'headers',
       key: 'Authorization',
       value: function (data) {
-        var ret = (data instanceof Object) && data.ret
-        return /^Bearer\s/.test(ret) ? ret : ''
+        const result = (data instanceof Object) && data.result
+        return /^Bearer\s/.test(result) ? result : ''
       },
     }, {
       type: 'headers',

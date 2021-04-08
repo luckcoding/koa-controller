@@ -1,8 +1,8 @@
 import { BaseContext } from 'koa'
-import Joi from '@hapi/joi'
+import Joi from 'joi'
 import jsonwebtoken from 'jsonwebtoken'
 import { isUser } from './middleware'
-import { Summary, Tag, request, Middle, check } from '../src'
+import { Summary, Tag, request, Middle, check, Response } from '../src'
 
 @Tag('用户')
 export class UserController {
@@ -11,22 +11,37 @@ export class UserController {
     account: Joi.string().required().description('账号'),
   }))
   @Summary('登陆')
+  @Response({
+    [200]: {
+      description: '成功',
+      schema: {},
+    }
+  })
   async login (ctx: BaseContext) {
     const { account } = ctx.payload()
-    ctx.body = jsonwebtoken.sign({ account }, 'secret', { expiresIn: 24 * 60 * 60 * 30 })
+    ctx.body = {
+      code: '0000',
+      result: `Bearer ${jsonwebtoken.sign({ account }, 'secret', { expiresIn: 24 * 60 * 60 * 30 })}`
+    }
   }
 
   @request.get('/current')
   @Summary('获取当前用户信息')
   @Middle([ isUser ])
   async current (ctx: BaseContext) {
-    ctx.body = ctx.user
+    ctx.body = {
+      code: '0000',
+      result: ctx.user,
+    }
   }
 
   @request.get('/user')
   @Summary('用户列表')
   async list (ctx: BaseContext) {
-    ctx.body = []
+    ctx.body = {
+      code: '0000',
+      result: [],
+    }
   }
 
   @request.post('/user')
@@ -38,7 +53,10 @@ export class UserController {
   }))
   @Summary('创建用户')
   async create (ctx: BaseContext) {
-    ctx.body = ctx.payload()
+    ctx.body = {
+      code: '0000',
+      result: ctx.payload(),
+    }
   }
 
   @request.put('/user/:id')
@@ -53,7 +71,10 @@ export class UserController {
   }))
   @Summary('更新用户')
   async update (ctx: BaseContext) {
-    ctx.body = ctx.payload()
+    ctx.body = {
+      code: '0000',
+      result: ctx.payload(),
+    }
   }
 }
 
@@ -62,6 +83,9 @@ export class ArticleController {
   @request.get('/article')
   @Summary('文章列表')
   async list (ctx: BaseContext) {
-    ctx.body = []
+    ctx.body = {
+      code: '0000',
+      result: [],
+    }
   }
 }

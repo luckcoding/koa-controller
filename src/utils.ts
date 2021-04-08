@@ -1,6 +1,7 @@
-import { convert as parse } from '@yeongjet/joi-to-json-schema'
-import { isSchema, ValidationError } from '@hapi/joi'
+import { convert as parse } from '@koa-lite/joi-schema'
+import { isSchema, ValidationError } from 'joi'
 import { ICheck } from './interface'
+
 
 /**
  * 合并数组，且去重
@@ -58,3 +59,4 @@ export class CheckError extends Error {
     Error.captureStackTrace(this, CheckError)
   }
 }
+
