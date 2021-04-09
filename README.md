@@ -6,6 +6,8 @@
 
 `$ yarn add @koa-lite/controller`
 
+## demo
+
 ## use
 
 ```js
