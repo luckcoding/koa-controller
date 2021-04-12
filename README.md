@@ -8,6 +8,11 @@
 
 ## demo
 
+> real demo: [hotchcms](https://github.com/luckcoding/hotchcms)
+
+* `$ npm install`
+* `$ npm start`
+
 ## use
 
 ```js
